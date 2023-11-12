@@ -1,10 +1,10 @@
 pipeline {
     agent {
-        docker {
-            image 'abhishekf5/maven-abhishek-docker-agent:v1'
-            args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
-        }
+    docker {
+      image 'abhishekf5/maven-abhishek-docker-agent:v1'
+      args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
     }
+  }
     stages {
         stage('Checkout') {
             steps {
@@ -14,20 +14,19 @@ pipeline {
         }
 
         stage('Check Docker Installation') {
-            steps {
-                script {
-                    sh 'docker --version'
-                }
-            }
+    steps {
+        script {
+            sh 'docker --version'
         }
-
+    }
+}
         stage('Build and Test') {
             steps {
                 sh 'ls -ltr'
+                // build the project and create a JAR file
                 sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
             }
         }
-
         stage('Static Code Analysis') {
             environment {
                 SONAR_URL = "http://52.204.60.119:9000/"
@@ -38,24 +37,22 @@ pipeline {
                 }
             }
         }
-
         stage('Build and Push Docker Image') {
-         
+            environment {
+                DOCKER_IMAGE = "rolex225-ultimate/cicd:${BUILD_NUMBER}"
+                DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
+                REGISTRY_CREDENTIALS = credentials('docker-cred')
+            }
             steps {
                 script {
-                    def customImageName = "rolex225-ultimate/cicd:${BUILD_NUMBER}"
-                    def projectDir = 'java-maven-sonar-argocd-helm-k8s'
-
-                    dir(projectDir) {
-                        sh "docker build -t ${customImageName} -f ${DOCKERFILE_LOCATION} ."
-                        withDockerRegistry([credentialsId: 'docker-cred', url: 'https://index.docker.io/v1/']) {
-                            sh "docker push ${customImageName}"
-                        }
+                    sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_LOCATION} .'
+                    def dockerImage = docker.image("${DOCKER_IMAGE}")
+                    docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
+                        dockerImage.push()
                     }
                 }
             }
         }
-
         stage('Update Deployment File') {
             environment {
                 GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
@@ -64,7 +61,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     sh '''
-                        git config user.email "austinwillis007@gmail.com"
+                        git config user.email "austinwillis007@gmai.com"
                         git config user.name "stillwill11"
                         BUILD_NUMBER=${BUILD_NUMBER}
                         sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
