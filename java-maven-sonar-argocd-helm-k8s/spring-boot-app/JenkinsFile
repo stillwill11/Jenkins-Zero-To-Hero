@@ -40,15 +40,11 @@ pipeline {
         }
 
         stage('Build and Push Docker Image') {
-            environment {
-                DOCKER_IMAGE = "rolex225-ultimate/cicd:${BUILD_NUMBER}"
-                DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
-                REGISTRY_CREDENTIALS = credentials('docker-cred')
-            }
+         
             steps {
                 script {
                     def customImageName = "rolex225-ultimate/cicd:${BUILD_NUMBER}"
-                    def projectDir = 'java-maven-sonar-argocd-helm-k8s/spring-boot-app'
+                    def projectDir = 'java-maven-sonar-argocd-helm-k8s'
 
                     dir(projectDir) {
                         sh "docker build -t ${customImageName} -f ${DOCKERFILE_LOCATION} ."
