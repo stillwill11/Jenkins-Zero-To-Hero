@@ -40,7 +40,7 @@ pipeline {
         stage('Build and Push Docker Image') {
             environment {
                 DOCKER_IMAGE = "rolex225-ultimate/cicd:${BUILD_NUMBER}"
-                DOCKERFILE_LOCATION = "java-maven-sonar-argocd-helm-k8s/spring-boot-app/Dockerfile"
+                DOCKERFILE_LOCATION = '.'
                 REGISTRY_CREDENTIALS = credentials('docker-cred')
             }
             steps {
@@ -61,7 +61,7 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                     sh '''
-                        git config user.email "austinwillis007@gmai.com"
+                        git config user.email "austinwillis007@gmail.com"
                         git config user.name "stillwill11"
                         BUILD_NUMBER=${BUILD_NUMBER}
                         sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml
