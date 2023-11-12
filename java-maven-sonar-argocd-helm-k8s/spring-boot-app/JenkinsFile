@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'adoptopenjdk:11-jdk-hotspot'
-            args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+            image 'maven:3.8.4-openjdk-11-slim' // or any other Maven image
+            args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
     stages {
