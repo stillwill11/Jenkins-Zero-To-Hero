@@ -43,7 +43,7 @@ pipeline {
 
         stage('Build and Push Docker Image') {
             environment {
-                DOCKER_IMAGE = "rolex225/getting-started:${BUILD_NUMBER}"
+                DOCKER_IMAGE = "rolex225/ultimate-cicd:${BUILD_NUMBER}"
                 DOCKERFILE_LOCATION = '.'
                 REGISTRY_CREDENTIALS = credentials('docker-cred')
             }
@@ -80,13 +80,13 @@ pipeline {
             }
         }
 
-      stage('Push image') {
-            steps {
-                withDockerRegistry([credentialsId: "docker-cred", url: ""]) {
-                    bat "docker push index.docker.io/rolex225-ultimate/cicd:${BUILD_NUMBER}"
-                }
-            }
-        }
+    //   stage('Push image') {
+    //         steps {
+    //             withDockerRegistry([credentialsId: "docker-cred", url: ""]) {
+    //                 bat "docker push index.docker.io/rolex225-ultimate/cicd:${BUILD_NUMBER}"
+    //             }
+    //         }
+    //     }
     }
 }
 
