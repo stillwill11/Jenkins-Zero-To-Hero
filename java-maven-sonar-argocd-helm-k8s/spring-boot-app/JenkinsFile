@@ -75,6 +75,6 @@ pipeline {
 
        stage('Push image') {
         withDockerRegistry([ credentialsId: "docker-cred", url: "https://index.docker.io/v1/" ]) {
-        bat "docker push index.docker.io/rolex225-ultimate/cicd"
+        bat "docker push index.docker.io/rolex225-ultimate/cicd:54"
         }
 
