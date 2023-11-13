@@ -79,7 +79,7 @@ pipeline {
         bat "docker login -u $USER -p $PASSWORD ${registry_url}"
         docker.withRegistry("https://${registry_url}", "docker-cred") {
             // Push your image now
-            bat "docker push index.docker.io/rolex225-ultimate/cicd:40"
+            bat "docker push index.docker.io/rolex225-ultimate/cicd:50"
         }
     }
 }
