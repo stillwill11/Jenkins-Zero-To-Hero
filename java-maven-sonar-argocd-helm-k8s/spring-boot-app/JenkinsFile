@@ -82,3 +82,5 @@ pipeline {
         withDockerRegistry([ credentialsId: "docker-cred", url: "" ]) {
         bat "docker push index.docker.io/rolex225-ultimate/cicd:58"
         }
+       }
+       
