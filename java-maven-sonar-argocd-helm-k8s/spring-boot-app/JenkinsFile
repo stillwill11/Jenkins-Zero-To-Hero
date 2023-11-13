@@ -12,12 +12,6 @@ pipeline {
                 cleanWs()
             }
         }
-        stage('Checkout') {
-            steps {
-                // sh 'echo passed'
-                git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
-            }
-        }
          stage('Checkout') {
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-cred', url: 'git@github.com:stillwill11/Jenkins-Zero-To-Hero.git']]])
