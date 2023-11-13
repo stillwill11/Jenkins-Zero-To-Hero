@@ -73,12 +73,13 @@ pipeline {
             }
         }
 
-        stage('Push image') {
-            steps {
-                withDockerRegistry([credentialsId: "docker-cred", url: ""]) {
-                    bat "docker push index.docker.io/rolex225-ultimate/cicd:47"
-                }
-            }
+       stage('Push image') {
+    withCredentials([usernamePassword( credentialsId: 'docker-cred', usernameVariable: 'USER', passwordVariable: 'PASSWORD')]) {
+        def registry_url = "registry.hub.docker.com/"
+        bat "docker login -u $USER -p $PASSWORD ${registry_url}"
+        docker.withRegistry("http://${registry_url}", "docker-cred") {
+            // Push your image now
+            bat "docker push index.docker.io/rolex225-ultimate/cicd:40"
         }
     }
 }
