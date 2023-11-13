@@ -20,7 +20,7 @@ pipeline {
         }
          stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'your-ssh-credentials-id', url: 'git@github.com:stillwill11/Jenkins-Zero-To-Hero.git']]])
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-cred', url: 'git@github.com:stillwill11/Jenkins-Zero-To-Hero.git']]])
             }
         }
 
