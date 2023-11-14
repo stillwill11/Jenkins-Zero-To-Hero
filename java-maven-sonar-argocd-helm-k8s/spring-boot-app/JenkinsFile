@@ -2,16 +2,15 @@ pipeline {
     agent {
         docker {
             image 'abhishekf5/maven-abhishek-docker-agent:v1'
-            args '--user root -v /var/run/docker.sock:/var/run/docker.sock' // mount Docker socket to access the host's Docker daemon
+            args '--user root -v /var/run/docker.sock:/var/run/docker.sock'
         }
     }
-    
-    stages {
 
+    stages {
         stage('Checkout') {
             steps {
-            sh 'echo passed'
-        //git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
+                echo 'Checking out code...'
+                // git branch: 'main', url: 'https://github.com/iam-veeramalla/Jenkins-Zero-To-Hero.git'
             }
         }
 
@@ -25,19 +24,18 @@ pipeline {
 
         stage('Build and Test') {
             steps {
-                sh 'ls -ltr'
-                // build the project and create a JAR file
+                echo 'Building and testing...'
                 sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn clean package'
             }
         }
 
         stage('Static Code Analysis') {
             environment {
-                SONAR_URL = "http://52.204.60.119:9000/"
+                SONAR_URL = 'http://52.204.60.119:9000/'
             }
             steps {
                 withCredentials([string(credentialsId: 'sonarqube', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}'
+                    sh "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && mvn sonar:sonar -Dsonar.login=$SONAR_AUTH_TOKEN -Dsonar.host.url=${SONAR_URL}"
                 }
             }
         }
@@ -49,25 +47,23 @@ pipeline {
                 REGISTRY_CREDENTIALS = credentials('docker-cred')
             }
             steps {
-                script {
-                    sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_LOCATION} .'
-                    // sh 'docker login -u rolex225 -p ${DOCKER_PASS}'
-                    // sh 'docker push ${DOCKER_IMAGE}'
-                    def dockerImage = docker.image("${DOCKER_IMAGE}")
-                    docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
-                        dockerImage.push()
-                    }
+                echo 'Building and pushing Docker image...'
+                sh "cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} -f ${DOCKERFILE_LOCATION} ."
+                def dockerImage = docker.image("${DOCKER_IMAGE}")
+                docker.withRegistry('https://index.docker.io/v1/', 'docker-cred') {
+                    dockerImage.push()
                 }
             }
         }
 
         stage('Update Deployment File') {
             environment {
-                GIT_REPO_NAME = "Jenkins-Zero-To-Hero"
-                GIT_USER_NAME = "stillwill11"
+                GIT_REPO_NAME = 'Jenkins-Zero-To-Hero'
+                GIT_USER_NAME = 'stillwill11'
             }
             steps {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    echo 'Updating deployment file...'
                     sh '''
                         git config user.email "austinwillis007@gmail.com"
                         git config user.name "stillwill11"
@@ -82,4 +78,3 @@ pipeline {
         }
     }
 }
-
