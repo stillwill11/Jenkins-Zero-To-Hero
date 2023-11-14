@@ -7,9 +7,6 @@ pipeline {
     }
     
     stages {
-        checkout scmGit(
-            branches: [[name: 'patch-1']],
-            userRemoteConfigs: [[url: 'https://github.com/stillwill11/Jenkins-Zero-To-Hero.git']])
 
         stage('Check Docker Installation') {
             steps {
