@@ -7,16 +7,6 @@ pipeline {
     }
     
     stages {
-        stage('Clean workspace') {
-            steps {
-                cleanWs()
-            }
-        }
-         stage('Checkout') {
-            steps {
-                checkout([$class: 'GitSCM', branches: [[name: '*/main']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'github-cred', url: 'git@github.com:stillwill11/Jenkins-Zero-To-Hero.git']]])
-            }
-        }
 
         stage('Check Docker Installation') {
             steps {
